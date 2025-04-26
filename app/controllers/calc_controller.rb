@@ -33,4 +33,23 @@ class CalcController < ApplicationController
     @random_number = rand(@min..@max)
     render({:template => "calc_layouts/random_results"})
   end
+
+  def payment
+    render({:template => "calc_layouts/payment_new"})
+  end
+
+  def payment_results
+    @apr      = params[:user_apr].to_f
+    @apr_formatted = @apr.to_fs(:percentage, {:precision => 4})
+    r        = @apr / (100.0 * 12.0)
+    @years    = params[:user_years].to_i
+    n        = @years * 12
+    @pv       = params[:user_principal].to_f
+    @principal = @pv.to_fs(:currency)
+    @numerator   = r * @pv
+    @denominator = 1 - (1 + r)**(-n)
+    @payment     = @numerator / @denominator
+    @payment_formatted = @payment.to_fs(:currency)
+    render({:template => "calc_layouts/payment_results"})
+  end
 end
